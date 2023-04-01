@@ -1,36 +1,59 @@
-from django.test import TestCase, Client
-
+from django.test import TestCase
+from django.urls import reverse
+from rest_framework import status
+from rest_framework.test import APIClient
 from apps.users.models import User
+from apps.users.serializers import UserSerializer
 
 
 class UserTest(TestCase):
     def setUp(self):
-        self.client = Client()
-        self.numbers_of_users = 5
-        self.user_list = []
+        self.client = APIClient()
+        self.user = User.objects.create_user(
+            username='testuser',
+            password='testpass',
+            email='testuser@example.com'
+        )
+        self.client.force_authenticate(user=self.user)
+        self.list_url = reverse('user-list')
+        self.detail_url = reverse('user-detail', kwargs={'username': self.user.username})
 
-        self.valid_user_data = {
-            'password': 'passuser',
-            'username': 'usertest',
-            'email': 'teste@test.com',
-            'first_name': 'Test',
-            'last_name': 'Test'
-        }
-        self.invalid_user_data = {
-            'password': '',
-            'username': '',
-            'email': 'teste',
-            'first_name': 'Test',
-            'last_name': 'Test'
-        }
+    def test_user_list(self):
+        response = self.client.get(self.list_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['username'], self.user.username)
 
-        for i in range(1, self.numbers_of_users + 1):
-            user = User.objects.create_user(
-                username=f'usertest{i}',
-                first_name='User',
-                last_name=f'Test {i}',
-                email=f'test{i}@test.com',
-            )
-            user.set_password(f'passuser{i}')
-            user.save()
-            self.user_list.append(user.username)
+    def test_user_detail(self):
+        response = self.client.get(self.detail_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['username'], self.user.username)
+
+    def test_user_create(self):
+        data = {
+            'username': 'newuser',
+            'password': 'newpass',
+            'email': 'newuser@example.com'
+        }
+        response = self.client.post(self.list_url, data=data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(User.objects.count(), 2)
+        self.assertEqual(User.objects.get(username='newuser').email, 'newuser@example.com')
+
+    def test_user_update(self):
+        data = {
+            'email': 'updated@example.com'
+        }
+        response = self.client.patch(self.detail_url, data=data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(User.objects.get(username=self.user.username).email, 'updated@example.com')
+
+    def test_user_delete(self):
+        response = self.client.delete(self.detail_url)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(User.objects.count(), 0)
+
+    def test_user_serializer(self):
+        serializer = UserSerializer(instance=self.user)
+        expected_fields = ['id', 'username', 'first_name', 'last_name', 'email']
+        self.assertEqual(set(serializer.data.keys()), set(expected_fields))
