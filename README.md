@@ -1,51 +1,51 @@
-# Projeto Api E-comerce
+### Developing a RESTful API using Django REST Framework to manage an E-commerce. The development of this application is exclusively for studying the involved technologies.
 
-### Desenvolvimento de uma RESTful API utilizando Django REST Framework para gerenciar um E-comerce.
-
-
-### Tecnologias utilizadas no projeto:
+### Technologies used in the project:
   * Django 4.1
-  * Python 3.9
+  * Python 3.10
   * Django REST Framework 3.14
   
-### Para executar o projeto:
-#### Passos para executar o projeto localmente
+### To run the project:
+#### Steps to run the project locally
 
-Criar um ambiente virtual Python (venv, virtualenv, etc.):
+Create a Python virtual environment (venv, virtualenv, etc.):
 
     $ virtualenv -p python3 venv
 
-Ativar a venv:
+Activate the virtual environment:
 
     $ source venv/bin/activate
 
-Instalar pacotes necessários:
+Install necessary packages:
 
     $ pip install -r requirements.txt
     
    
-### Configuração do arquivo .env:
+### Configuration of the .env file:
 
-Por questões de segurança, variáveis, chaves e configurações sensíveis ficam em um arquivo .env na raiz do projeto Django. Para isso, basta criar um arquivo de texto normal com o nome .env no mesmo nível que manage.py.
+For security reasons, sensitive variables, keys, and configurations are stored in a .env file at the root of the Django project. To do this, simply create a normal text file named .env at the same level as manage.py.
 
-No arquivo você pode informar:
+In the file, you can specify:
 
     DEBUG=True
 
-    SECRET_KEY='sua_chave_secreta'
+    SECRET_KEY='your_secret_key'
 
-O default do `DEBUG` é `False` se não for informado. 
-Se `DATABASE_URL` não for informado, o projeto rodará utilizando o SQLite.
-A única configuração realmente necessária é a `SECRET_KEY`.
+The default value of `DEBUG` is `False` if not specified. 
+If `DATABASE_URL` is not specified, the project will run using SQLite.
+The only truly necessary configuration is the `SECRET_KEY`.
 
-### Após essas configurações, execute:
- 
+Generate your `SECRET_KEY` using:
+
+    import secrets
+    secrets.token_hex(24)
+
+### After these configurations, execute:
+
     $ python manage.py makemigrations
 ######
     $ python manage.py migrate
 ######
     $ python manage.py test
-
 ######    
     $ python manage.py runserver
-
