@@ -47,3 +47,8 @@ class SignupViewTestCase(TestCase):
         self.assertEqual(
             response.data, {"username": ["A user with that username already exists."]}
         )
+
+    def test_signup_get_request_fails(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertEqual(response.data, {"detail": 'Method "GET" not allowed.'})
