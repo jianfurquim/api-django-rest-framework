@@ -2,6 +2,8 @@ from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 from django.db import models
 
+from apps.utils.hash import hash_generator
+
 
 class User(AbstractUser):
     slug = models.SlugField(max_length=100, blank=True, unique=True, null=True)
@@ -13,4 +15,8 @@ class User(AbstractUser):
         ordering = ["pk"]
 
     def __str__(self):
-        return self.get_full_name()
+        return f"User: {self.username}"
+
+    def save(self, *args, **kwargs):
+        self.slug = self.slug or hash_generator()
+        super(User, self).save(*args, **kwargs)

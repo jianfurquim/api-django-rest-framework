@@ -5,6 +5,21 @@ import django.contrib.auth.validators
 from django.db import migrations, models
 import django.utils.timezone
 
+from apps.utils.hash import hash_generator
+
+
+def create_superuser_default(apps, schema_editor):
+    apps.get_model("user", "User").objects.create_superuser(
+        username="root",
+        password="toor",
+        slug=hash_generator(),
+    )
+
+
+def reverse_create_superuser(apps, schema_editor):
+    user = apps.get_model("user", "User").objects.filter(username="root").first()
+    user.delete()
+
 
 class Migration(migrations.Migration):
 
@@ -133,5 +148,8 @@ class Migration(migrations.Migration):
             managers=[
                 ("objects", django.contrib.auth.models.UserManager()),
             ],
+        ),
+        migrations.RunPython(
+            create_superuser_default, reverse_code=reverse_create_superuser
         ),
     ]
