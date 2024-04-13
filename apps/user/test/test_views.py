@@ -14,7 +14,9 @@ class SignupViewTestCase(TestCase):
         response = self.client.post(self.url, data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["username"], data["username"])
-        self.assertTrue(Token.objects.filter(user__username=data["username"]).exists())
+        self.assertTrue(
+            Token.objects.filter(user__username=data["username"]).exists()
+        )
 
     def test_signup_fails_without_data(self):
         response = self.client.post(self.url, dict())
@@ -31,13 +33,17 @@ class SignupViewTestCase(TestCase):
         data = {"username": "testuser"}
         response = self.client.post(self.url, data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data, {"password": ["This field is required."]})
+        self.assertEqual(
+            response.data, {"password": ["This field is required."]}
+        )
 
     def test_signup_fails_without_username(self):
         data = {"password": "testpassword123"}
         response = self.client.post(self.url, data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data, {"username": ["This field is required."]})
+        self.assertEqual(
+            response.data, {"username": ["This field is required."]}
+        )
 
     def test_signup_fails_with_existing_username(self):
         data = {"username": "testuser", "password": "testpassword123"}
@@ -45,10 +51,15 @@ class SignupViewTestCase(TestCase):
         response = self.client.post(self.url, data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(
-            response.data, {"username": ["A user with that username already exists."]}
+            response.data,
+            {"username": ["A user with that username already exists."]},
         )
 
     def test_signup_get_request_fails(self):
         response = self.client.get(self.url)
-        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
-        self.assertEqual(response.data, {"detail": 'Method "GET" not allowed.'})
+        self.assertEqual(
+            response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED
+        )
+        self.assertEqual(
+            response.data, {"detail": 'Method "GET" not allowed.'}
+        )
