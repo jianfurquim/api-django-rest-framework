@@ -1,4 +1,4 @@
-### Developing a RESTful API using Django REST Framework to manage an E-commerce. The development of this application is exclusively for studying the involved technologies.
+### Developing a RESTful API using Django REST Framework. The development of this application is exclusively for studying the involved technologies.
 
 ### Technologies used in the project:
   * Django 4.1
